@@ -6,13 +6,17 @@ export default function RecipeCard({ recipe, onDelete }) {
   const { user } = useAuth();
   const isOwner = user && user._id === recipe.user;
 
+  // Backend URL
   const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+  // ✅ Properly encode the image URL (handles spaces)
   const imageUrl = recipe.photo
-    ? `${backendUrl}${recipe.photo.startsWith("/") ? recipe.photo : "/" + recipe.photo}`
+    ? `${backendUrl}${encodeURI(recipe.photo)}`
     : "https://placehold.co/400x300?text=No+Image";
 
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition duration-300">
+      {/* Image linking to details */}
       <Link to={`/recipes/${recipe._id}`}>
         <img
           src={imageUrl}
@@ -22,19 +26,23 @@ export default function RecipeCard({ recipe, onDelete }) {
       </Link>
 
       <div className="p-4">
+        {/* Title linking to details */}
         <h2 className="text-xl font-semibold text-gray-800 hover:text-green-600 transition">
           <Link to={`/recipes/${recipe._id}`}>{recipe.title}</Link>
         </h2>
 
+        {/* Short description */}
         <p className="text-gray-600 text-sm mt-1 line-clamp-2">
           {recipe.description || "No description available"}
         </p>
 
+        {/* Extra info */}
         <div className="flex justify-between items-center mt-3 text-sm text-gray-500">
           <span>⏱ {recipe.cookingTime || 30} min</span>
           <span>🍽 {recipe.servings || 1} servings</span>
         </div>
 
+        {/* Delete button if owner */}
         {isOwner && (
           <button
             onClick={onDelete}
