@@ -8,9 +8,9 @@ export default function RecipeCard({ recipe, onDelete }) {
 
   // ✅ Use full backend URL
   const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-  const imageUrl = recipe.photo
-    ? `${backendUrl}${recipe.photo.startsWith("/") ? "" : "/"}${recipe.photo}`
-    : "https://placehold.co/400x300?text=No+Image";
+ const imageUrl = recipe.photo
+  ? `${backendUrl}${recipe.photo}` // just append photo
+  : "https://placehold.co/400x300?text=No+Image";
 
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition duration-300">
