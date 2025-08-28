@@ -1,12 +1,56 @@
-# React + Vite
+# Recipe Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive, and interactive frontend for a recipe sharing platform built with **React**, **Tailwind CSS**, and **Vite**. Users can browse recipes, watch cooking videos, rate recipes, comment, and manage their profiles.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Table of Contents
 
-## Expanding the ESLint configuration
+- [Features](#features)  
+- [Demo](#demo)  
+- [Tech Stack](#tech-stack)  
+- [Installation](#installation)  
+- [Environment Variables](#environment-variables)  
+- [Available Scripts](#available-scripts)  
+- [Folder Structure](#folder-structure)  
+- [Contributing](#contributing)  
+- [License](#license)  
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## Features
+
+- User authentication: Register, Login, Logout  
+- Profile page with dynamic followers/following display  
+- Recipe listing and detail pages  
+- Cooking videos with responsive video player  
+- Interactive rating and comment sections  
+- Add/remove favorites  
+- Responsive design for desktop and mobile  
+
+---
+
+## Demo
+
+> Add your deployed frontend URL here (Netlify / Vercel / GitHub Pages)
+
+---
+
+## Tech Stack
+
+- **React 18** – Frontend library  
+- **Vite** – Build tool & dev server  
+- **Tailwind CSS** – Styling & responsive design  
+- **Axios** – API requests  
+- **React Router DOM** – Routing  
+- **Context API** – Global state (Auth, User, etc.)  
+
+---
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/Praveenk24825/RecipeFrontend.git
+cd RecipeFrontend
