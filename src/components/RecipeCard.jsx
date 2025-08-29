@@ -2,36 +2,30 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const RecipeCard = ({ recipe }) => {
+  const getImageUrl = (recipe) => {
+    if (recipe.photo) {
+      return `${import.meta.env.VITE_API_URL.replace("/api", "")}${recipe.photo}`;
+    }
+    return "https://via.placeholder.com/300x200?text=No+Image";
+  };
+
   return (
-    <div className="bg-white rounded-2xl shadow-md hover:shadow-xl overflow-hidden transition-all duration-300">
-      
-      {/* Recipe Image */}
-      <Link to={`/recipes/${recipe._id}`}>
-        <img
-          src={recipe.photo || "https://via.placeholder.com/400x250?text=No+Image"}
-          alt={recipe.title}
-          className="w-full h-60 object-cover"
-        />
-      </Link>
-
-      {/* Card Content */}
+    <div className="bg-white shadow-md rounded-2xl overflow-hidden hover:shadow-lg transition">
+      <img
+        src={getImageUrl(recipe)}
+        alt={recipe.title}
+        className="w-full h-48 object-cover"
+      />
       <div className="p-4">
-        <h2 className="text-xl font-semibold mb-2">{recipe.title}</h2>
-        <p className="text-gray-600 text-sm line-clamp-3">{recipe.description}</p>
-        
-        {/* Optional: Video Preview */}
-        {recipe.video && (
-          <video controls className="w-full h-40 mt-3 rounded-xl">
-            <source src={recipe.video} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        )}
-
+        <h3 className="text-xl font-semibold mb-2">{recipe.title}</h3>
+        <p className="text-gray-600 text-sm line-clamp-2">
+          {recipe.description}
+        </p>
         <Link
           to={`/recipes/${recipe._id}`}
-          className="mt-3 inline-block text-blue-600 hover:underline"
+          className="text-indigo-600 mt-2 inline-block"
         >
-          View Recipe
+          View Details →
         </Link>
       </div>
     </div>
