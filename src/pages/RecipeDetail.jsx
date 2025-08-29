@@ -1,94 +1,95 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 export default function RecipeDetails() {
   const { id } = useParams();
+  const { user } = useAuth();
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const backendUrl = import.meta.env.VITE_API_URL.replace("/api", "");
 
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
-        const { data } = await api.get(`/recipes/${id}`);
+        const res = await api.get(`/recipes/${id}`);
+        const data = res.data;
         setRecipe(data);
+
+        if (user) {
+          const favRes = await api.get("/recipes/favorites", {
+            headers: { Authorization: `Bearer ${user.token}` },
+          });
+          setIsFavorite(favRes.data.some((fav) => fav._id === data._id));
+        }
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching recipe:", err);
       } finally {
         setLoading(false);
       }
     };
     fetchRecipe();
-  }, [id]);
+  }, [id, user]);
 
-  const getMediaUrl = (path) =>
-    path ? `${import.meta.env.VITE_API_URL.replace("/api", "")}${path}` : null;
+  const toggleFavorite = async () => {
+    if (!user) return;
+    try {
+      if (isFavorite) {
+        await api.delete(
+          "/recipes/favorites",
+          { data: { recipeId: recipe._id } },
+          { headers: { Authorization: `Bearer ${user.token}` } }
+        );
+      } else {
+        await api.post(
+          "/recipes/favorites",
+          { recipeId: recipe._id },
+          { headers: { Authorization: `Bearer ${user.token}` } }
+        );
+      }
+      setIsFavorite(!isFavorite);
+    } catch (err) {
+      console.error("Error toggling favorite:", err);
+    }
+  };
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
-  if (!recipe) return <p className="text-center mt-10">Recipe not found</p>;
+  if (loading) return <p className="text-center mt-6">Loading...</p>;
+  if (!recipe) return <p className="text-center mt-6 text-red-500">Recipe not found.</p>;
+
+  const videoUrl = recipe.video ? `${backendUrl}${recipe.video}` : null;
 
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-6 mt-6">
-      <h1 className="text-3xl font-bold mb-4">{recipe.title}</h1>
-
-      {/* Image */}
-      {recipe.photo && (
-        <img
-          src={getMediaUrl(recipe.photo)}
-          alt={recipe.title}
-          className="w-full h-80 object-cover rounded-xl mb-6"
-        />
-      )}
-
-      {/* Video */}
-      {recipe.video && (
+      {videoUrl ? (
         <video
-          src={getMediaUrl(recipe.video)}
+          src={videoUrl}
           controls
-          className="w-full rounded-xl mb-6"
-        />
+          className="w-full h-64 rounded-lg object-cover"
+          type="video/mp4"
+          onError={() => console.error("Video failed to load:", videoUrl)}
+        >
+          Your browser does not support the video tag.
+        </video>
+      ) : (
+        <p className="text-center text-gray-500">No video available</p>
       )}
 
-      <p className="text-gray-700 mb-4">{recipe.description}</p>
+      <h2 className="text-2xl font-bold mt-4">{recipe.title}</h2>
+      <p className="text-gray-700 mt-2">{recipe.description}</p>
 
-      {/* Ingredients */}
-      {recipe.ingredients && recipe.ingredients.length > 0 && (
-        <div className="mb-4">
-          <h2 className="text-xl font-semibold mb-2">Ingredients</h2>
-          <ul className="list-disc pl-6 text-gray-700">
-            {recipe.ingredients.map((ing, i) => (
-              <li key={i}>{ing}</li>
-            ))}
-          </ul>
-        </div>
+      {user && (
+        <button
+          onClick={toggleFavorite}
+          className={`mt-4 px-4 py-2 rounded-lg ${
+            isFavorite ? "bg-red-500 text-white" : "bg-gray-200 text-gray-700"
+          } hover:opacity-90 transition`}
+        >
+          {isFavorite ? "♥ Remove from Favorites" : "♡ Add to Favorites"}
+        </button>
       )}
-
-      {/* Steps */}
-      {recipe.steps && recipe.steps.length > 0 && (
-        <div className="mb-4">
-          <h2 className="text-xl font-semibold mb-2">Steps</h2>
-          <ol className="list-decimal pl-6 text-gray-700">
-            {recipe.steps.map((step, i) => (
-              <li key={i} className="mb-2">{step}</li>
-            ))}
-          </ol>
-        </div>
-      )}
-
-      {/* Ratings & Comments */}
-      <div className="mt-6">
-        <h2 className="text-xl font-semibold mb-2">Ratings & Comments</h2>
-        {recipe.comments && recipe.comments.length > 0 ? (
-          recipe.comments.map((c, i) => (
-            <div key={i} className="border-b py-2">
-              <p className="text-sm text-gray-800">{c.text}</p>
-              <p className="text-xs text-gray-500">by {c.user?.name}</p>
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-500">No comments yet</p>
-        )}
-      </div>
     </div>
   );
 }
