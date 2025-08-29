@@ -1,4 +1,4 @@
-/*import React, { useState } from "react";
+import React, { useState } from "react";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 
@@ -132,9 +132,9 @@ const AddRecipe = () => {
   );
 };
 
-export default AddRecipe;*/
+export default AddRecipe;
 
-
+/*
 import React, { useState } from "react";
 import api from "../api/axios"; // Axios instance with baseURL
 import { useNavigate } from "react-router-dom";
@@ -215,7 +215,7 @@ const AddRecipe = () => {
           className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500"
         />
 
-        {/* Ingredients */}
+      
         <div>
           <h2 className="font-semibold mb-2">Ingredients</h2>
           {ingredients.map((ing, idx) => (
@@ -232,7 +232,7 @@ const AddRecipe = () => {
           </button>
         </div>
 
-        {/* Steps */}
+   
         <div>
           <h2 className="font-semibold mb-2">Steps</h2>
           {steps.map((step, idx) => (
@@ -249,7 +249,7 @@ const AddRecipe = () => {
           </button>
         </div>
 
-        {/* Upload files */}
+      
         <div>
           <label className="font-semibold mb-1 block">Upload Photo</label>
           <input type="file" accept="image/*" onChange={(e) => setPhoto(e.target.files[0])} />
@@ -268,3 +268,4 @@ const AddRecipe = () => {
 };
 
 export default AddRecipe;
+*/
