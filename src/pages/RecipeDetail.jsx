@@ -1,50 +1,55 @@
-// src/pages/RecipeDetails.jsx
+
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api/axios";
-import VideoPlayer from "../components/VideoPlayer";
 import RatingStars from "../components/RatingStars";
 import CommentSection from "../components/CommentSection";
+import VideoPlayer from "../components/VideoPlayer";
 
-export default function RecipeDetails() {
+const RecipeDetails = () => {
   const { id } = useParams();
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
 
+  // ✅ Fetch recipe + favorites
   const fetchRecipe = async () => {
     try {
       setLoading(true);
+
+      // Fetch recipe details
       const { data } = await api.get(`/recipes/${id}`);
-
-      // Fix video path
-      if (data.video) {
-        data.video = `${import.meta.env.VITE_API_URL.replace("/api", "")}${data.video}`;
-      }
-
       setRecipe(data);
 
-      const favRes = await api.get("/recipes/favorites");
+      // Fetch favorites with the corrected path
+      const favRes = await api.get("/recipes/favorites"); // Path is correct
+      // Use fav.recipe?._id to get the correct recipe ID from the favorite object
       const favIds = favRes.data.map((fav) => fav._id || fav.recipe?._id);
       setIsFavorite(favIds.includes(id));
     } catch (err) {
       console.error("Failed to fetch recipe:", err);
+      alert("Failed to load recipe.");
     } finally {
       setLoading(false);
     }
   };
 
+  // ✅ Toggle favorite
   const toggleFavorite = async () => {
     try {
       if (isFavorite) {
-        await api.delete("/recipes/favorites", { data: { recipeId: id } });
+        // Corrected path for DELETE request
+        await api.delete("/recipes/favorites", { data: { recipeId: id } }); // Path is correct
         setIsFavorite(false);
       } else {
-        await api.post("/recipes/favorites", { recipeId: id });
+        // Corrected path for POST request
+        await api.post("/recipes/favorites", { recipeId: id }); // Path is correct
         setIsFavorite(true);
       }
     } catch (err) {
       console.error("Failed to toggle favorite:", err);
+      alert("Something went wrong while updating favorites.");
     }
   };
 
@@ -55,7 +60,7 @@ export default function RecipeDetails() {
   if (loading)
     return (
       <p className="text-center mt-20 text-gray-500 text-lg animate-pulse">
-        Loading recipe...
+        Loading...
       </p>
     );
 
@@ -67,15 +72,15 @@ export default function RecipeDetails() {
     );
 
   return (
-    <div className="container mx-auto px-4 py-10 max-w-6xl">
-      {/* Title & Favorite */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
-        <h1 className="text-5xl font-extrabold text-gray-900 mb-4 md:mb-0">
+    <div className="max-w-6xl mx-auto mt-10 p-6 md:p-10 bg-gray-50 rounded-3xl shadow-xl">
+      {/* Title + Favorite */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-5xl font-extrabold text-gray-900">
           {recipe.title}
         </h1>
         <button
           onClick={toggleFavorite}
-          className={`px-6 py-3 rounded-full text-white font-semibold shadow-lg transition-all duration-300 transform hover:scale-105 ${
+          className={`px-4 py-2 rounded-xl text-white font-semibold shadow-md transition ${
             isFavorite
               ? "bg-red-500 hover:bg-red-600"
               : "bg-gray-400 hover:bg-gray-500"
@@ -86,38 +91,30 @@ export default function RecipeDetails() {
       </div>
 
       {/* Description */}
-      <p className="text-gray-700 text-lg mb-10 leading-relaxed border-l-4 border-yellow-400 pl-4">
+      <p className="mb-8 text-gray-700 text-lg leading-relaxed">
         {recipe.description}
       </p>
 
       {/* Video */}
-      {recipe.video && (
-        <div className="mb-10 rounded-2xl overflow-hidden shadow-2xl border border-gray-200">
-          <VideoPlayer videoUrl={recipe.video} />
-        </div>
-      )}
+      {recipe.video && <VideoPlayer videoUrl={recipe.video} />}
 
       {/* Ingredients & Steps */}
-      <div className="grid md:grid-cols-2 gap-8 mb-12">
-        {/* Ingredients */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-shadow duration-300">
-          <h2 className="text-3xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
-            🧾 Ingredients
+      <div className="grid md:grid-cols-2 gap-10 mb-10">
+        <div className="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300">
+          <h2 className="text-3xl font-semibold mb-4 text-gray-800">
+            Ingredients
           </h2>
           <ul className="list-disc list-inside space-y-2 text-gray-700">
-            {recipe.ingredients?.map((ing, idx) => (
-              <li key={idx} className="text-base">{ing}</li>
+            {recipe.ingredients.map((ing, idx) => (
+              <li key={idx}>{ing}</li>
             ))}
           </ul>
         </div>
 
-        {/* Instructions */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-shadow duration-300">
-          <h2 className="text-3xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
-            👩‍🍳 Steps
-          </h2>
+        <div className="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300">
+          <h2 className="text-3xl font-semibold mb-4 text-gray-800">Steps</h2>
           <ol className="list-decimal list-inside space-y-3 text-gray-700">
-            {recipe.steps?.map((step, idx) => (
+            {recipe.steps.map((step, idx) => (
               <li
                 key={idx}
                 className="bg-gray-50 p-3 rounded-xl shadow-sm hover:bg-gray-100 transition-colors duration-200"
@@ -129,17 +126,21 @@ export default function RecipeDetails() {
         </div>
       </div>
 
-      {/* Ratings */}
-      <div className="mb-10 bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-shadow duration-300">
-        <h2 className="text-3xl font-semibold mb-4 text-gray-800">⭐ Ratings</h2>
+      {/* Rating */}
+      <div className="mb-10 bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300">
+        <h2 className="text-3xl font-semibold mb-4 text-gray-800">
+          Rate this Recipe
+        </h2>
         <RatingStars recipe={recipe} onUpdate={fetchRecipe} />
       </div>
 
       {/* Comments */}
-      <div className="mb-10 bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-shadow duration-300">
-        <h2 className="text-3xl font-semibold mb-4 text-gray-800">💬 Comments</h2>
+      <div className="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300">
+        <h2 className="text-3xl font-semibold mb-4 text-gray-800">Comments</h2>
         <CommentSection recipe={recipe} onUpdate={fetchRecipe} />
       </div>
     </div>
   );
-}
+};
+
+export default RecipeDetails;
