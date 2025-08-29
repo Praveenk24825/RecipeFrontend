@@ -6,36 +6,24 @@ export default function RecipeCard({ recipe, onDelete, onFavorite, favorites }) 
   const { user } = useAuth();
   const isOwner = user && user._id === recipe.user;
 
-  // Backend base URL (remove /api for media)
   const backendUrl = import.meta.env.VITE_API_URL.replace("/api", "");
 
-  // Determine media
-  const mediaUrl = recipe.video
-    ? `${backendUrl}${recipe.video}`
-    : recipe.photo
+  // For card, show photo first; fallback to placeholder if no photo
+  const mediaUrl = recipe.photo
     ? `${backendUrl}${recipe.photo}`
-    : "https://placehold.co/400x300?text=No+Media";
+    : "https://placehold.co/400x300?text=No+Image";
 
-  // Check if recipe is in user's favorites
   const isFavorite = favorites?.some(fav => fav._id === recipe._id);
 
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition duration-300">
-      {/* Media */}
+      {/* Media thumbnail */}
       <Link to={`/recipes/${recipe._id}`}>
-        {recipe.video ? (
-          <video
-            src={mediaUrl}
-            controls
-            className="w-full h-52 object-cover hover:scale-105 transition duration-300"
-          />
-        ) : (
-          <img
-            src={mediaUrl}
-            alt={recipe.title}
-            className="w-full h-52 object-cover hover:scale-105 transition duration-300"
-          />
-        )}
+        <img
+          src={mediaUrl}
+          alt={recipe.title}
+          className="w-full h-52 object-cover hover:scale-105 transition duration-300"
+        />
       </Link>
 
       <div className="p-4">
