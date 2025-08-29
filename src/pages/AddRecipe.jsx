@@ -134,14 +134,15 @@ const AddRecipe = () => {
 
 export default AddRecipe;*/
 
+
 import React, { useState } from "react";
-import api from "../api/axios";
+import api from "../api/axios"; // Axios instance with baseURL
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext"; // get user token
+import { useAuth } from "../context/AuthContext";
 
 const AddRecipe = () => {
   const navigate = useNavigate();
-  const { user } = useAuth(); // get current user and token
+  const { user } = useAuth();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [ingredients, setIngredients] = useState([""]);
@@ -169,8 +170,6 @@ const AddRecipe = () => {
     e.preventDefault();
     if (!title || !description) return alert("Title & description required");
 
-    if (!user || !user.token) return alert("You must be logged in");
-
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
@@ -184,14 +183,14 @@ const AddRecipe = () => {
       const { data } = await api.post("/recipes", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${user.token}`, // ✅ send token
+          Authorization: `Bearer ${user.token}`, // make sure user has token
         },
       });
       alert("Recipe added successfully!");
       navigate(`/recipes/${data._id}`);
     } catch (err) {
-      console.error(err);
-      alert("Failed to add recipe");
+      console.error("Add recipe error:", err.response || err);
+      alert(err.response?.data?.message || "Failed to add recipe");
     } finally {
       setLoading(false);
     }
@@ -250,13 +249,13 @@ const AddRecipe = () => {
           </button>
         </div>
 
-        {/* Photo & Video */}
+        {/* Upload files */}
         <div>
-          <label className="font-semibold mb-1 block">Upload Photo (optional)</label>
+          <label className="font-semibold mb-1 block">Upload Photo</label>
           <input type="file" accept="image/*" onChange={(e) => setPhoto(e.target.files[0])} />
         </div>
         <div>
-          <label className="font-semibold mb-1 block">Upload Video (optional)</label>
+          <label className="font-semibold mb-1 block">Upload Video</label>
           <input type="file" accept="video/*" onChange={(e) => setVideo(e.target.files[0])} />
         </div>
 
