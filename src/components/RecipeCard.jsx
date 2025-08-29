@@ -1,59 +1,41 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 
-export default function RecipeCard({ recipe, onDelete }) {
-  const { user } = useAuth();
-  const isOwner = user && user._id === recipe.user;
-
-  // ✅ Get image from backend or use default stored on backend
-  const getImageUrl = (photo) => {
-    if (!photo) {
-      return "https://recipeshare-4.onrender.com/uploads/images/default-recipe.jpg";
-    }
-    return `https://recipeshare-4.onrender.com${photo}`;
-  };
-
-  const imageUrl = getImageUrl(recipe.photo);
-
+const RecipeCard = ({ recipe }) => {
   return (
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition duration-300">
-      {/* Image links to recipe details */}
+    <div className="bg-white rounded-2xl shadow-md hover:shadow-xl overflow-hidden transition-all duration-300">
+      
+      {/* Recipe Image */}
       <Link to={`/recipes/${recipe._id}`}>
         <img
-          src={imageUrl}
+          src={recipe.photo || "https://via.placeholder.com/400x250?text=No+Image"}
           alt={recipe.title}
-          className="w-full h-52 object-cover hover:scale-105 transition duration-300"
+          className="w-full h-60 object-cover"
         />
       </Link>
 
+      {/* Card Content */}
       <div className="p-4">
-        {/* Title */}
-        <h2 className="text-xl font-semibold text-gray-800 hover:text-green-600 transition">
-          <Link to={`/recipes/${recipe._id}`}>{recipe.title}</Link>
-        </h2>
-
-        {/* Description */}
-        <p className="text-gray-600 text-sm mt-1 line-clamp-2">
-          {recipe.description || "No description available"}
-        </p>
-
-        {/* Cooking info */}
-        <div className="flex justify-between items-center mt-3 text-sm text-gray-500">
-          <span>⏱ {recipe.cookingTime || 30} min</span>
-          <span>🍽 {recipe.servings || 1} servings</span>
-        </div>
-
-        {/* Delete button for owner */}
-        {isOwner && (
-          <button
-            onClick={onDelete}
-            className="mt-3 w-full bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition"
-          >
-            Delete Recipe
-          </button>
+        <h2 className="text-xl font-semibold mb-2">{recipe.title}</h2>
+        <p className="text-gray-600 text-sm line-clamp-3">{recipe.description}</p>
+        
+        {/* Optional: Video Preview */}
+        {recipe.video && (
+          <video controls className="w-full h-40 mt-3 rounded-xl">
+            <source src={recipe.video} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         )}
+
+        <Link
+          to={`/recipes/${recipe._id}`}
+          className="mt-3 inline-block text-blue-600 hover:underline"
+        >
+          View Recipe
+        </Link>
       </div>
     </div>
   );
-}
+};
+
+export default RecipeCard;
