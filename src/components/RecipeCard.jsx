@@ -6,10 +6,12 @@ export default function RecipeCard({ recipe, onDelete }) {
   const { user } = useAuth();
   const isOwner = user && user._id === recipe.user;
 
-  // ✅ Utility to get full image URL (works for local & deployed)
+  // ✅ Get image from backend or use default stored on backend
   const getImageUrl = (photo) => {
-    if (!photo) return "https://via.placeholder.com/400x300?text=No+Image";
-    return `${import.meta.env.VITE_API_URL.replace("/api", "")}${photo}`;
+    if (!photo) {
+      return "https://recipeshare-4.onrender.com/uploads/images/default-recipe.jpg";
+    }
+    return `https://recipeshare-4.onrender.com${photo}`;
   };
 
   const imageUrl = getImageUrl(recipe.photo);
